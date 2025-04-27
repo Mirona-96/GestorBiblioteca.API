@@ -10,7 +10,7 @@ namespace GestorBiblioteca.API.Controllers
     {
         private readonly IEmprestimoService _emprestimoService;
 
-        EmprestimosController(IEmprestimoService emprestimoService)
+       public EmprestimosController(IEmprestimoService emprestimoService)
         {
             _emprestimoService = emprestimoService;
         }

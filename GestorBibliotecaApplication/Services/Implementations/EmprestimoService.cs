@@ -55,6 +55,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
 
             livro.MarcarDisponivel();
             _livrosDbContext.Emprestimos.Add(emprestimo);
+            _livrosDbContext.SaveChanges();
             return emprestimo.Id;
         }
 
@@ -80,6 +81,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
 
             var dataEntrega = data != default ? data : DateTime.Now;
             var livro = _livrosDbContext.Livros.SingleOrDefault(emp => emp.Id == id);
+            _livrosDbContext.SaveChanges();
             return emprestimo.RegistarDevolucao(dataEntrega, livro);
 
         }
@@ -107,6 +109,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
                     DataEmprestimo = emprestimo.DataEmprestimo
                 });
             }
+            _livrosDbContext.SaveChanges();
             return emprestimoViewModel;
         }
 
@@ -129,7 +132,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
                 DataDevolucao = emprestimo.DataDevolucao,
                 Status = emprestimo.Status,
             };
-
+            _livrosDbContext.SaveChanges();
             return emprestimoDetailsViewModel;
         }
 
@@ -145,6 +148,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
                 throw new Exception("Emprestimo não encontrado");
 
             emprestimo.Update(inputModel.DataDevolucao);
+            _livrosDbContext.SaveChanges();
         }
     }
 }

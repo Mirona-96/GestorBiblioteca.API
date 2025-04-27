@@ -28,6 +28,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
             var livro = new Livro(inputModel.Titulo, inputModel.Autor, inputModel.ISBN, inputModel.AnoPublicacao);
 
             _livrosDbContext.Livros.Add(livro);
+            _livrosDbContext.SaveChanges();
             return livro.Id;
         }
 
@@ -35,6 +36,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
         {
             var livro = _livrosDbContext.Livros.SingleOrDefault(l => l.Id == id);
             livro.EliminarLivro(id);
+            _livrosDbContext.SaveChanges();
         }
 
         public List<LivroViewModel> GetAll(string query)
@@ -53,7 +55,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
             var livrosViewModel = livrosQuery
             .Select(l => new LivroViewModel(l.Id, l.Titulo, l.Autor))
             .ToList();
-
+            _livrosDbContext.SaveChanges();
             return livrosViewModel;
         }
 
@@ -71,7 +73,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
                 ISBN = livro.Isbn,
                 AnoPublicacao = livro.AnoPublicacao,
             };
-
+            _livrosDbContext.SaveChanges();
             return livroDetailsModel;
         }
 
@@ -79,6 +81,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
         {
             var livro = _livrosDbContext.Livros.SingleOrDefault(l => l.Id == inputModel.Id);
             livro.Update(inputModel.Autor, inputModel.Titulo, inputModel.ISBN, inputModel.AnoPublicacao);
+            _livrosDbContext.SaveChanges();
         }
     }
 }
