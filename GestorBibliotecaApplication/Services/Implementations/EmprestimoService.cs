@@ -58,7 +58,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
 
             var emprestimo = new Emprestimo(inputModel.IdUsuario, inputModel.IdLivro, inputModel.DataDevolucao);
 
-            livro.MarcarDisponivel();
+            livro.MarcarIndisponivel();
             _livrosDbContext.Emprestimos.Add(emprestimo);
             _livrosDbContext.SaveChanges();
             return emprestimo.Id;

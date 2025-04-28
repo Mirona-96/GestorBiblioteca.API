@@ -18,13 +18,20 @@ namespace GestorBiblioteca.API.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] NewEmprestimoInputModel inputModel)
         {
-            if (inputModel.DataDevolucao < inputModel.DataEmprestimo)
+            try
             {
-                return BadRequest("Data invalida");
-            }
-            var id = _emprestimoService.Create(inputModel);
+                if (inputModel.DataDevolucao < inputModel.DataEmprestimo)
+                {
+                    return BadRequest("Data invalida");
+                }
+                var id = _emprestimoService.Create(inputModel);
 
-            return CreatedAtAction(nameof(GetById), new { id = id }, inputModel);
+                return CreatedAtAction(nameof(GetById), new { id = id }, inputModel);
+
+            } catch (Exception ex)
+            {
+                return UnprocessableEntity(new {Erro = ex.Message}); //captura erro emitido pelo metodo Create()
+            }
         }
 
         [HttpGet("{id}")]
