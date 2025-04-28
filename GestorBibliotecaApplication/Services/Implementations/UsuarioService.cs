@@ -26,8 +26,8 @@ namespace GestorBibliotecaApplication.Services.Implementations
                 throw new ArgumentNullException(nameof(inputModel));
 
             var usuario = new Usuario(inputModel.Nome, inputModel.Email);
-            // _livrosDbContext.Usuarios ??= new List<Usuario>();
             _livrosDbContext.Usuarios.Add(usuario);
+            _livrosDbContext.SaveChanges();
             return usuario.Id;
         }
 

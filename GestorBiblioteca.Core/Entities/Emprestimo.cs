@@ -8,6 +8,7 @@ namespace GestorBiblioteca.Core.Entities
         {
             IdUsuario = idUsuario;
             IdLivro = idLivro;
+            DataEmprestimo = DateTime.Now;
             DataDevolucao = dataDevolucao;
             Status = EmprestimoStatusEnum.EmCurso;
         }

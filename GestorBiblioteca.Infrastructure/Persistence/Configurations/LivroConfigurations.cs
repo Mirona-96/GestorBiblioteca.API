@@ -15,6 +15,10 @@ namespace GestorBiblioteca.Infrastructure.Persistence.Configurations
         {
             builder
                 .HasKey(l => l.Id);
+
+            builder
+                .Property(l => l.Id)
+                .ValueGeneratedOnAdd();
         }
     }
 }

@@ -4,6 +4,7 @@ using GestorBiblioteca.Infrastructure.Persistence;
 using GestorBibliotecaApplication.InputModels;
 using GestorBibliotecaApplication.Services.Interfaces;
 using GestorBibliotecaApplication.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,16 +24,20 @@ namespace GestorBibliotecaApplication.Services.Implementations
 
         private (string NomeUsuario, string TituloLivro) BuscarNomeUsuarioTituloLivro(int idUsuario, int idLivro)
         {
-            var usuario = _livrosDbContext.Usuarios.FirstOrDefault(
-                   u => u.Id == idUsuario);
 
-            var livro = _livrosDbContext.Livros.FirstOrDefault(
-                l => l.Id == idLivro);
+            //realiza consultas isoladas
+            var usuario = _livrosDbContext.Usuarios
+                .AsNoTracking() // não manter no tracking (só leitura)
+                .FirstOrDefault(u => u.Id == idUsuario);
+
+            var livro = _livrosDbContext.Livros
+                .AsNoTracking()
+                .FirstOrDefault(l => l.Id == idLivro);
 
             string NomeUsuario = usuario != null ? usuario.Nome : "Usuario não encontrado";
             string TituloLivro = livro != null ? livro.Titulo : "Livro não encontrado";
 
-            return (TituloLivro, NomeUsuario);
+            return (NomeUsuario, TituloLivro);
         }
 
         /*  public void Atrasado(int id)
@@ -115,7 +120,12 @@ namespace GestorBibliotecaApplication.Services.Implementations
 
         public EmprestimoDetailsViewModel GetById(int id)
         {
-            var emprestimo = _livrosDbContext.Emprestimos.SingleOrDefault(emp => emp.Id == id);
+
+
+            var emprestimo = _livrosDbContext.Emprestimos
+                .Include(u => u.Usuario)
+                .Include(l => l.Livro)
+                .SingleOrDefault(emp => emp.Id == id);
 
             if (emprestimo == null) return null;
 

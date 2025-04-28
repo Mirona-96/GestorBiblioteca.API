@@ -16,6 +16,11 @@ namespace GestorBiblioteca.Infrastructure.Persistence.Configurations
             builder
                 .HasKey(e => e.Id);
 
+            builder
+                .Property(e => e.Id)
+                .ValueGeneratedOnAdd();
+                
+
             //1:N - um usuario pode realizar varios emprestimos
             builder
                 .HasOne(e => e.Usuario)

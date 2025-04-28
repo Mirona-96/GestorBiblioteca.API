@@ -45,17 +45,17 @@ namespace GestorBibliotecaApplication.Services.Implementations
 
             if (!string.IsNullOrWhiteSpace(query))
             {
+
                 livrosQuery = livrosQuery
                     .Where(l =>
-                    l.Titulo.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-                    l.Autor.Contains(query, StringComparison.OrdinalIgnoreCase));
-
+                    l.Titulo.ToLower().Contains(query.ToLower()) ||
+                    l.Autor.ToLower().Contains(query.ToLower()));
             }
 
             var livrosViewModel = livrosQuery
             .Select(l => new LivroViewModel(l.Id, l.Titulo, l.Autor))
             .ToList();
-            _livrosDbContext.SaveChanges();
+         //   _livrosDbContext.SaveChanges();
             return livrosViewModel;
         }
 
@@ -72,8 +72,9 @@ namespace GestorBibliotecaApplication.Services.Implementations
                 Autor = livro.Autor,
                 ISBN = livro.Isbn,
                 AnoPublicacao = livro.AnoPublicacao,
+                Status = livro.Status
             };
-            _livrosDbContext.SaveChanges();
+           // _livrosDbContext.SaveChanges();
             return livroDetailsModel;
         }
 

@@ -28,7 +28,7 @@ namespace GestorBiblioteca.API.Controllers
             var usuario = _usuarioService.GetUser(id);
 
             if (usuario == null)
-                return NotFound();
+                return NotFound("usuario nao encontrado");
             return Ok(usuario);
         }
 

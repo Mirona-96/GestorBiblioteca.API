@@ -30,7 +30,7 @@ namespace GestorBiblioteca.API.Controllers
             //buscar o livro
             var livro = _livroService.GetById(id);
             if (livro == null)
-                return NotFound();
+                return NotFound("Livro não encontrado");
             //return NotFound
             return Ok(livro);
         }
@@ -61,19 +61,19 @@ namespace GestorBiblioteca.API.Controllers
         {
             if (string.IsNullOrEmpty(inputModel.Titulo))
             {
-                return BadRequest();
+                return BadRequest("introduza o título do livro válido.");
             }
             if (string.IsNullOrEmpty(inputModel.Autor))
             {
-                return BadRequest();
+                return BadRequest("introduza o autor do livro");
             }
             if (inputModel.AnoPublicacao > DateTime.Now.Year)
             {
-                return BadRequest();
+                return BadRequest("Ano de Publicação inválido.");
             }
             _livroService.Update(inputModel);
             //Atualizar objecto
-            return NoContent();
+            return NotFound("Livro não encontrado");
         }
 
         [HttpDelete("{id}")]
@@ -82,7 +82,7 @@ namespace GestorBiblioteca.API.Controllers
             try
             {
                 _livroService.Delete(id);
-                return NoContent();
+                return NotFound("Livro não encontrado");
             }
             catch (Exception ex)
             {
