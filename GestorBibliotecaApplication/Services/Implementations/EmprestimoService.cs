@@ -40,13 +40,6 @@ namespace GestorBibliotecaApplication.Services.Implementations
             return (NomeUsuario, TituloLivro);
         }
 
-        /*  public void Atrasado(int id)
-          {
-              var emprestimo = _livrosDbContext.Emprestimos.SingleOrDefault(emp => emp.Id == id);
-
-              DateTime data = DateTime.Now;
-              emprestimo.Atrasado(data);
-          }*/
 
         public int Create(NewEmprestimoInputModel inputModel)
         {
@@ -63,19 +56,6 @@ namespace GestorBibliotecaApplication.Services.Implementations
             _livrosDbContext.SaveChanges();
             return emprestimo.Id;
         }
-
-     /*   public void Criado(int id)
-        {
-            var emprestimo = _livrosDbContext.Emprestimos.SingleOrDefault(emp => emp.Id == id);
-
-            emprestimo.Criado();
-        }*/
-
-      /*  public void Delete(int id)
-        {
-            var emprestimo = _livrosDbContext.Emprestimos.SingleOrDefault(e => e.Id == id);
-            emprestimo.TerminarEmprestimo();
-        }*/
 
         public int DevolverLivro(int id, DateTime data)
         {
@@ -100,10 +80,10 @@ namespace GestorBibliotecaApplication.Services.Implementations
                 var (nomeUsuario, tituloLivro) = BuscarNomeUsuarioTituloLivro(emprestimo.IdUsuario, emprestimo.IdLivro);
 
                 if (!string.IsNullOrWhiteSpace(query) &&
-                        !nomeUsuario.Contains(query, StringComparison.OrdinalIgnoreCase) &&
-                        !tituloLivro.Contains(query, StringComparison.OrdinalIgnoreCase))
+                    !(nomeUsuario.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                      tituloLivro.Contains(query, StringComparison.OrdinalIgnoreCase)))
                 {
-                    continue; //filtra se encontrar a "query"
+                    continue;
                 }
 
                 emprestimoViewModel.Add(new EmprestimoViewModel
@@ -111,16 +91,15 @@ namespace GestorBibliotecaApplication.Services.Implementations
                     IdEmprestimo = emprestimo.Id,
                     NomeUsuario = nomeUsuario,
                     TituloLivro = tituloLivro,
-                    DataEmprestimo = emprestimo.DataEmprestimo
+                    DataEmprestimo = emprestimo.DataEmprestimo,
+                    DataDevolucao = emprestimo.DataDevolucao
                 });
             }
-            _livrosDbContext.SaveChanges();
             return emprestimoViewModel;
         }
 
         public EmprestimoDetailsViewModel GetById(int id)
         {
-
 
             var emprestimo = _livrosDbContext.Emprestimos
                 .Include(u => u.Usuario)
@@ -142,14 +121,9 @@ namespace GestorBibliotecaApplication.Services.Implementations
                 DataDevolucao = emprestimo.DataDevolucao,
                 Status = emprestimo.Status,
             };
-            _livrosDbContext.SaveChanges();
             return emprestimoDetailsViewModel;
         }
 
-       /* public void Terminado(int id)
-        {
-            throw new NotImplementedException();
-        }*/
 
         public void Update(UpdateEmprestimoInputModel inputModel)
         {

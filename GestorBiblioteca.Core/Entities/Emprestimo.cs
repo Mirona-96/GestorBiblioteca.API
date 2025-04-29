@@ -15,8 +15,10 @@ namespace GestorBiblioteca.Core.Entities
 
         public int IdLivro { get; private set; }
         public Livro Livro { get; private set; } 
+
         public int IdUsuario { get; private set; }
         public Usuario Usuario { get; private set; }
+
         public DateTime DataEmprestimo { get; private set; }
         public DateTime DataDevolucao { get; private set; }
         public EmprestimoStatusEnum Status { get; private set; }

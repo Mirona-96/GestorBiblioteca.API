@@ -39,7 +39,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
             {
                 return null;
             }
-            return new UsuarioViewModel(usuario.Nome, usuario.Email);
+            return new UsuarioViewModel(usuario.Nome, usuario.Email,usuario.DataCadastro,usuario.Emprestimos);
         }
     }
 }
