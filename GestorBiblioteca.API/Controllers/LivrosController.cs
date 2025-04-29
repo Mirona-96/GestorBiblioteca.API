@@ -19,9 +19,17 @@ namespace GestorBiblioteca.API.Controllers
         [HttpGet]
         public IActionResult Get (string query)
         {
-            //buscar todos ou com filtro
-            var livros = _livroService.GetAll(query);
-            return Ok(livros);
+            try
+            {
+                //buscar todos ou com filtro
+                var livros = _livroService.GetAll(query);
+                return Ok(livros);
+            } 
+            catch (Exception ex)
+            {
+                return UnprocessableEntity(new { Erro = ex.Message }); //captura erro emitido pelo metodo GetAll()
+            }
+
         }
 
         [HttpGet("{id}")]

@@ -5,6 +5,7 @@ using GestorBibliotecaApplication.InputModels;
 using GestorBibliotecaApplication.Services.Interfaces;
 using GestorBibliotecaApplication.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +17,12 @@ namespace GestorBibliotecaApplication.Services.Implementations
     public class EmprestimoService : IEmprestimoService
     {
         private readonly LivrosDbContext _livrosDbContext;
+        private readonly string _connString;
 
-        public EmprestimoService(LivrosDbContext livrosDbContext)
+        public EmprestimoService(LivrosDbContext livrosDbContext, IConfiguration configuration)
         {
             _livrosDbContext = livrosDbContext;
+            _connString = configuration.GetConnectionString("GestorBibliotecaCs");
         }
 
         private (string NomeUsuario, string TituloLivro) BuscarNomeUsuarioTituloLivro(int idUsuario, int idLivro)
