@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace GestorBiblioteca.Core.Entities
 {
-    public class BaseEntity
+    public abstract class BaseEntity
     {
-        public int Id { get; protected set; }
+        public int Id { get; private set; }
     }
 }

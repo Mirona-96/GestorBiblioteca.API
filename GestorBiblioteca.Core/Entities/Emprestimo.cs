@@ -56,23 +56,27 @@ namespace GestorBiblioteca.Core.Entities
 
         public int RegistarDevolucao(DateTime dataEntrega, Livro? livro)
         {
-            if (dataEntrega > DataDevolucao)
+            if ((Status == EmprestimoStatusEnum.Criado) || (Status == EmprestimoStatusEnum.EmCurso))
             {
-                Status = EmprestimoStatusEnum.Atrasado;
-                livro.MarcarDisponivel();
-                return (dataEntrega - DataDevolucao).Days;
+                if (dataEntrega > DataDevolucao)
+                {
+                    Status = EmprestimoStatusEnum.Atrasado;
+                    livro.MarcarDisponivel();
+                    return (dataEntrega - DataDevolucao).Days;
+                }
+                else
+                {
+                    Status = EmprestimoStatusEnum.Terminado;
+                    livro.MarcarDisponivel();
+                    return 0;
+                }
             }
-            else
-            {
-                Status = EmprestimoStatusEnum.Terminado;
-                livro.MarcarDisponivel();
-                return 0;
-            }
+            throw new InvalidOperationException("Empréstimo finalizado.");
         }
 
         public void Update(DateTime dataDevolucao)
         {
-            if (Status == EmprestimoStatusEnum.Criado)
+            if ((Status == EmprestimoStatusEnum.Criado) || (Status == EmprestimoStatusEnum.EmCurso))
             {
                 DataDevolucao = dataDevolucao;
             }

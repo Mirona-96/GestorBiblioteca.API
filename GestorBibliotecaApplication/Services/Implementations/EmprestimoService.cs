@@ -1,9 +1,11 @@
-﻿using GestorBiblioteca.Core.Entities;
+﻿using Dapper;
+using GestorBiblioteca.Core.Entities;
 using GestorBiblioteca.Core.Enums;
 using GestorBiblioteca.Infrastructure.Persistence;
 using GestorBibliotecaApplication.InputModels;
 using GestorBibliotecaApplication.Services.Interfaces;
 using GestorBibliotecaApplication.ViewModels;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -136,6 +138,40 @@ namespace GestorBibliotecaApplication.Services.Implementations
 
             emprestimo.Update(inputModel.DataDevolucao);
             _livrosDbContext.SaveChanges();
+        }
+
+        public List<EmprestimoViewModel> GetEmprestimoUsuario(int idUsuario)
+        {
+            try
+            {
+                using (var sqlConn = new SqlConnection(_connString))
+                {
+                    sqlConn.Open();
+                    var query = @"SELECT
+                                       e.Id AS IdEmprestimo,
+                                       u.Nome AS NomeUsuario,
+                                       l.Titulo AS TituloLivro,
+                                       e.DataEmprestimo,
+                                       e.DataDevolucao
+                                FROM Emprestimos e
+                                INNER JOIN Usuarios u ON E.IdUsuario = u.Id
+                                INNER JOIN Livros l ON e.IdLivro = l.Id
+                                WHERE e.IdUsuario = @idUsuario";
+                    var emprestimos = sqlConn.Query<EmprestimoViewModel>(query, new {idUsuario}).ToList();
+                    return emprestimos;
+                }
+            } 
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"erro de SQL: { ex.Message}");
+                throw new Exception("Erro ao aceder a base de dados");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"erro ocorrido: {ex.Message}");
+                throw;
+            }
+
         }
     }
 }

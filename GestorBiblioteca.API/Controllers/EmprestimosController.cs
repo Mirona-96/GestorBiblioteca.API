@@ -1,6 +1,7 @@
 ﻿using GestorBibliotecaApplication.InputModels;
 using GestorBibliotecaApplication.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 namespace GestorBiblioteca.API.Controllers
 {
@@ -28,7 +29,8 @@ namespace GestorBiblioteca.API.Controllers
 
                 return CreatedAtAction(nameof(GetById), new { id = id }, inputModel);
 
-            } catch (Exception ex)
+            } 
+            catch (Exception ex)
             {
                 return UnprocessableEntity(new {Erro = ex.Message}); //captura erro emitido pelo metodo Create()
             }
@@ -67,15 +69,6 @@ namespace GestorBiblioteca.API.Controllers
             return NoContent();
         }
 
-        /*
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            _emprestimoService.(id);
-            return NoContent();
-        }*/
-
-
         [HttpPut("{id}/devolucao")]
         public IActionResult DevolverLivro (int id, [FromBody] DateTime dataEntrega)
         {
@@ -90,10 +83,31 @@ namespace GestorBiblioteca.API.Controllers
                     DiasAtraso = diasAtraso
                 });
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException ex)
             {
-                return NotFound(new { Message = ex.Message });
+                return NotFound(new { Message = ex.Message });  //captura erro ao n encontrar o id do Emprestimo
+            } 
+            catch (InvalidOperationException ex)
+            {
+                return UnprocessableEntity(new { Erro = ex.Message }); //captura erro emitido pelo metodo Devolver()
             }
-        }   
+        }
+
+        [HttpGet("usuario/{idUsuario}")]
+        public IActionResult GetEmprestimosUsuario(int idUsuario)
+        {
+            try
+            {
+                var emprestimos = _emprestimoService.GetEmprestimoUsuario(idUsuario);
+
+                if (emprestimos == null)
+                    return NotFound(new {Mensagem = "nenhum emprestimo realizado pelo usuario." });
+
+                return Ok(emprestimos);
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -11,6 +11,7 @@ namespace GestorBibliotecaApplication.Services.Interfaces
     public interface IEmprestimoService
     {
         List<EmprestimoViewModel> GetAll(string query);
+        List <EmprestimoViewModel> GetEmprestimoUsuario(int idUsuario);
         EmprestimoDetailsViewModel GetById(int id);
         int Create(NewEmprestimoInputModel inputModel);
         void Update(UpdateEmprestimoInputModel inputModel);
@@ -19,5 +20,6 @@ namespace GestorBibliotecaApplication.Services.Interfaces
        // void Atrasado(int id);
       //  void Terminado(int id);
         int DevolverLivro(int id, DateTime data); //retorna eventuais dias de atraso
+        
     }
 }

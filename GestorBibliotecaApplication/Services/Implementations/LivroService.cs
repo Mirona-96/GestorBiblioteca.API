@@ -109,7 +109,6 @@ namespace GestorBibliotecaApplication.Services.Implementations
                 AnoPublicacao = livro.AnoPublicacao,
                 Status = livro.Status
             };
-           // _livrosDbContext.SaveChanges();
             return livroDetailsModel;
         }
 
