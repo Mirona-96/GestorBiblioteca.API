@@ -171,7 +171,6 @@ namespace GestorBibliotecaApplication.Services.Implementations
                 Console.WriteLine($"erro ocorrido: {ex.Message}");
                 throw;
             }
-
         }
     }
 }

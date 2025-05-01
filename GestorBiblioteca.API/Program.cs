@@ -1,4 +1,5 @@
 using GestorBiblioteca.Infrastructure.Persistence;
+using GestorBibliotecaApplication.Services;
 using GestorBibliotecaApplication.Services.Implementations;
 using GestorBibliotecaApplication.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -27,10 +28,15 @@ builder.Services.AddDbContext<LivrosDbContext>(options =>
     )
 );
 
+//builder.Services.AddDbContext<LivrosDbContext>(o => o.UseInMemoryDatabase("GestorBibliotecaCs"));
 
+
+/*
 builder.Services.AddScoped<IEmprestimoService, EmprestimoService>();
 builder.Services.AddScoped<ILivroService, LivroService>();
-builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();*/
+builder.Services
+    .AddAplication();
 
 var app = builder.Build();
 

@@ -54,7 +54,7 @@ namespace GestorBiblioteca.Core.Entities
             }
         }*/
 
-        public int RegistarDevolucao(DateTime dataEntrega, Livro? livro)
+        public int RegistarDevolucao(DateTime dataEntrega, Livro livro)
         {
             if ((Status == EmprestimoStatusEnum.Criado) || (Status == EmprestimoStatusEnum.EmCurso))
             {
