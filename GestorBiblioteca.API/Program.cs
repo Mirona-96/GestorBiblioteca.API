@@ -1,8 +1,11 @@
 using GestorBiblioteca.Infrastructure.Persistence;
+using GestorBibliotecaApplication.Commands.CreateEmprestimo;
 using GestorBibliotecaApplication.Services;
 using GestorBibliotecaApplication.Services.Implementations;
 using GestorBibliotecaApplication.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using NPOI.SS.Formula.Functions;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +30,8 @@ builder.Services.AddDbContext<LivrosDbContext>(options =>
         sqlOptions => sqlOptions.MigrationsAssembly("GestorBiblioteca.API")
     )
 );
+
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<T>());
 
 //builder.Services.AddDbContext<LivrosDbContext>(o => o.UseInMemoryDatabase("GestorBibliotecaCs"));
 

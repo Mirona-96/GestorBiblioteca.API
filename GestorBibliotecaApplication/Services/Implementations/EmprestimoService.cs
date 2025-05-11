@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,7 +47,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
         }
 
 
-        public int Create(NewEmprestimoInputModel inputModel)
+        public ResultViewModel<int> Insert(InsertEmprestimoInputModel inputModel)
         {
             var livro = _livrosDbContext.Livros.FirstOrDefault(l => l.Id == inputModel.IdLivro);
             if (livro == null)
@@ -54,12 +55,13 @@ namespace GestorBibliotecaApplication.Services.Implementations
             if (livro.Status == LivroStatusEnum.indisponivel)
                 throw new Exception("Livro indisponivel");
 
-            var emprestimo = new Emprestimo(inputModel.IdUsuario, inputModel.IdLivro, inputModel.DataDevolucao);
+            //var emprestimo = new Emprestimo(inputModel.IdUsuario, inputModel.IdLivro, inputModel.DataDevolucao);
+            var emprestimo = inputModel.ToEntity();
 
             livro.MarcarIndisponivel();
             _livrosDbContext.Emprestimos.Add(emprestimo);
             _livrosDbContext.SaveChanges();
-            return emprestimo.Id;
+            return ResultViewModel<int>.Success(emprestimo.Id);
         }
 
         public int DevolverLivro(int id, DateTime data)
@@ -76,7 +78,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
 
         }
 
-        public List<EmprestimoViewModel> GetAll(string query)
+        public ResultViewModel <List<EmprestimoViewModel>> GetAll(string query)
         {
             var emprestimoViewModel = new List<EmprestimoViewModel>();
 
@@ -100,10 +102,11 @@ namespace GestorBibliotecaApplication.Services.Implementations
                     DataDevolucao = emprestimo.DataDevolucao
                 });
             }
-            return emprestimoViewModel;
+              return ResultViewModel<List<EmprestimoViewModel>>.Success(emprestimoViewModel);
+//            return emprestimoViewModel;
         }
 
-        public EmprestimoDetailsViewModel GetById(int id)
+        public ResultViewModel<EmprestimoDetailsViewModel> GetById(int id)
         {
 
             var emprestimo = _livrosDbContext.Emprestimos
@@ -111,7 +114,10 @@ namespace GestorBibliotecaApplication.Services.Implementations
                 .Include(l => l.Livro)
                 .SingleOrDefault(emp => emp.Id == id);
 
-            if (emprestimo == null) return null;
+            if (emprestimo == null)
+            {
+                return ResultViewModel<EmprestimoDetailsViewModel>.Error("Emprestimo inexistente");
+            }
 
             var (nomeUsuario, tituloLivro) = BuscarNomeUsuarioTituloLivro(emprestimo.IdUsuario, emprestimo.IdLivro);
 
@@ -126,18 +132,19 @@ namespace GestorBibliotecaApplication.Services.Implementations
                 DataDevolucao = emprestimo.DataDevolucao,
                 Status = emprestimo.Status,
             };
-            return emprestimoDetailsViewModel;
+            return ResultViewModel<EmprestimoDetailsViewModel>.Success(emprestimoDetailsViewModel);
         }
 
 
-        public void Update(UpdateEmprestimoInputModel inputModel)
+        public ResultViewModel Update(UpdateEmprestimoInputModel inputModel)
         {
             var emprestimo = _livrosDbContext.Emprestimos.SingleOrDefault(emp => emp.Id == inputModel.Id);
             if (emprestimo == null)
-                throw new Exception("Emprestimo não encontrado");
+                return ResultViewModel.Error("Projecto inexistente");
 
             emprestimo.Update(inputModel.DataDevolucao);
             _livrosDbContext.SaveChanges();
+            return ResultViewModel.Sucess();
         }
 
         public List<EmprestimoViewModel> GetEmprestimoUsuario(int idUsuario)
@@ -171,6 +178,20 @@ namespace GestorBibliotecaApplication.Services.Implementations
                 Console.WriteLine($"erro ocorrido: {ex.Message}");
                 throw;
             }
+        }
+
+        public ResultViewModel Delete(int id)
+        {
+            var emprestimo = _livrosDbContext.Emprestimos.SingleOrDefault(e => e.Id == id);
+
+            if (emprestimo == null)
+                return ResultViewModel.Error("Emprestimo inexistente");
+
+            emprestimo.SetAsDeleted();
+            _livrosDbContext.Emprestimos.Update(emprestimo);
+            _livrosDbContext.SaveChanges();
+
+            return ResultViewModel.Sucess();
         }
     }
 }

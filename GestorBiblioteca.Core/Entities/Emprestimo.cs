@@ -4,7 +4,10 @@ namespace GestorBiblioteca.Core.Entities
 {
     public class Emprestimo: BaseEntity
     {
+        protected Emprestimo() { }
+
         public Emprestimo(int idUsuario, int idLivro, DateTime dataDevolucao)
+            :base()
         {
             IdUsuario = idUsuario;
             IdLivro = idLivro;

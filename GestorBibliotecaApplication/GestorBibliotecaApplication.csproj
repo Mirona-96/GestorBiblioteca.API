@@ -8,10 +8,22 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="MediatR" Version="12.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GestorBiblioteca.Infrastructure\GestorBiblioteca.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Commands\CreateLivro\" />
+    <Folder Include="Commands\DeleteLivro\" />
+    <Folder Include="Commands\UpdateLivro\" />
+    <Folder Include="Commands\UpdateEmprestimo\" />
+    <Folder Include="Queries\GetAllLivros\" />
+    <Folder Include="Queries\GetAllEmprestimos\" />
+    <Folder Include="Queries\GetEmprestimoById\" />
+    <Folder Include="Queries\GetLivroById\" />
   </ItemGroup>
 
 </Project>
