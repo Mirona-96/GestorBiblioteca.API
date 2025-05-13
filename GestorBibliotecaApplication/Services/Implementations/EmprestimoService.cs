@@ -140,7 +140,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
         {
             var emprestimo = _livrosDbContext.Emprestimos.SingleOrDefault(emp => emp.Id == inputModel.Id);
             if (emprestimo == null)
-                return ResultViewModel.Error("Projecto inexistente");
+                return ResultViewModel.Error("Emprestimo inexistente");
 
             emprestimo.Update(inputModel.DataDevolucao);
             _livrosDbContext.SaveChanges();

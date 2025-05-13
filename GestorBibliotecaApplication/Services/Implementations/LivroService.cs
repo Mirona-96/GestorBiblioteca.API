@@ -26,26 +26,34 @@ namespace GestorBibliotecaApplication.Services.Implementations
             _connString = configuration.GetConnectionString("GestorBibliotecaCs");
         }
 
-        public int Create(NewLivroInputModel inputModel)
+        public ResultViewModel<int> Insert (NewLivroInputModel inputModel)
         {
             if (inputModel == null)
                 throw new ArgumentNullException(nameof(inputModel));
 
-            var livro = new Livro(inputModel.Titulo, inputModel.Autor, inputModel.ISBN, inputModel.AnoPublicacao);
+            var livro = inputModel.ToEntity();
 
             _livrosDbContext.Livros.Add(livro);
             _livrosDbContext.SaveChanges();
-            return livro.Id;
+            return ResultViewModel<int>.Success (livro.Id);
         }
 
-        public void Delete(int id)
-        {
-            var livro = _livrosDbContext.Livros.SingleOrDefault(l => l.Id == id);
-            livro.EliminarLivro(id);
-            _livrosDbContext.SaveChanges();
+        public ResultViewModel Delete(int id)
+        {        
+          var livro = _livrosDbContext.Livros.SingleOrDefault(l => l.Id == id);
+          if (livro == null)
+          return ResultViewModel.Error("Emprestimo inexistente");
+
+
+          livro.EliminarLivro(id);
+          livro.SetAsDeleted();
+          _livrosDbContext.Livros.Update(livro);
+          _livrosDbContext.SaveChanges();
+
+          return ResultViewModel.Sucess();
         }
 
-        public List<LivroViewModel> GetAll(string query)
+        public ResultViewModel<List<LivroViewModel>>  GetAll(string query)
         {
             try
             {
@@ -61,7 +69,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
 
                     var livros = sqlConn.Query<LivroViewModel>(script, new { query }).ToList();
 
-                    return livros;
+                    return ResultViewModel<List<LivroViewModel>>.Success (livros);
                 }
             }
             catch (SqlException ex)
@@ -94,11 +102,12 @@ namespace GestorBibliotecaApplication.Services.Implementations
             return livrosViewModel;*/
         }
 
-        public LivroDetailsModel GetById(int id)
+        public ResultViewModel <LivroDetailsModel> GetById(int id)
         {
             var livro = _livrosDbContext.Livros.SingleOrDefault(l => l.Id == id);
 
-            if (livro == null) return null;
+            if (livro == null)
+                return ResultViewModel<LivroDetailsModel>.Error("Livro inexistente");
 
             var livroDetailsModel = new LivroDetailsModel
             {
@@ -109,14 +118,19 @@ namespace GestorBibliotecaApplication.Services.Implementations
                 AnoPublicacao = livro.AnoPublicacao,
                 Status = livro.Status
             };
-            return livroDetailsModel;
+            return ResultViewModel <LivroDetailsModel>.Success(livroDetailsModel);
         }
 
-        public void Update(UpdateLivroInputModel inputModel)
+        public ResultViewModel Update(UpdateLivroInputModel inputModel)
         {
             var livro = _livrosDbContext.Livros.SingleOrDefault(l => l.Id == inputModel.Id);
+
+           if (livro == null)
+                 return ResultViewModel.Error("Livro inexistente");
+
             livro.Update(inputModel.Autor, inputModel.Titulo, inputModel.ISBN, inputModel.AnoPublicacao);
             _livrosDbContext.SaveChanges();
+            return ResultViewModel.Sucess();
         }
     }
 }

@@ -59,7 +59,7 @@ namespace GestorBiblioteca.API.Controllers
                 return BadRequest("Ano de Publicação inválido.");
             }
 
-            var id = _livroService.Create(inputModel);
+            var id = _livroService.Insert(inputModel);
             //cadastrar livro
             return CreatedAtAction(nameof(GetById), new { id = id }, inputModel);
         }

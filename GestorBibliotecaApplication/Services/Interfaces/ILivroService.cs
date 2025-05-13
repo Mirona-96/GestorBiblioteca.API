@@ -11,10 +11,10 @@ namespace GestorBibliotecaApplication.Services.Interfaces
     public interface ILivroService
     {
 
-        List<LivroViewModel> GetAll(string query);
-        LivroDetailsModel GetById(int id);
-        public int Create(NewLivroInputModel inputModel);
-        void Update(UpdateLivroInputModel inputModel);
-        void Delete(int id);
+        ResultViewModel<List<LivroViewModel>> GetAll(string query);
+        ResultViewModel<LivroDetailsModel> GetById(int id) ;
+        ResultViewModel<int> Insert(NewLivroInputModel inputModel);
+        ResultViewModel Update(UpdateLivroInputModel inputModel);
+        ResultViewModel Delete(int id);
     }
 }
