@@ -28,7 +28,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
             _connString = configuration.GetConnectionString("GestorBibliotecaCs");
         }
 
-        private (string NomeUsuario, string TituloLivro) BuscarNomeUsuarioTituloLivro(int idUsuario, int idLivro)
+        public (string NomeUsuario, string TituloLivro) BuscarNomeUsuarioTituloLivro(int idUsuario, int idLivro)
         {
 
             //realiza consultas isoladas

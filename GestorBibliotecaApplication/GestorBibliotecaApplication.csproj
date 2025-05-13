@@ -17,9 +17,7 @@
 
   <ItemGroup>
     <Folder Include="Commands\UpdateLivro\" />
-    <Folder Include="Commands\UpdateEmprestimo\" />
     <Folder Include="Queries\GetAllLivros\" />
-    <Folder Include="Queries\GetAllEmprestimos\" />
     <Folder Include="Queries\GetEmprestimoById\" />
     <Folder Include="Queries\GetLivroById\" />
   </ItemGroup>
