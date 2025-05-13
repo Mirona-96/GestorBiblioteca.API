@@ -17,6 +17,6 @@ namespace GestorBibliotecaApplication.Commands.CreateEmprestimo
         public DateTime DataDevolucao { get; set; }
 
         public Emprestimo ToEntity()
-    => new(IdLivro, IdUsuario, DataDevolucao);
+        => new(IdLivro, IdUsuario, DataDevolucao);
     }
 }

@@ -16,8 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\CreateLivro\" />
-    <Folder Include="Commands\DeleteLivro\" />
     <Folder Include="Commands\UpdateLivro\" />
     <Folder Include="Commands\UpdateEmprestimo\" />
     <Folder Include="Queries\GetAllLivros\" />
