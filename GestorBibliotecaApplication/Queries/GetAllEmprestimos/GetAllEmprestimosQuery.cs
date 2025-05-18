@@ -1,8 +1,9 @@
 ﻿using GestorBiblioteca.Infrastructure.Persistence;
 using GestorBibliotecaApplication.Services.Implementations;
 using GestorBibliotecaApplication.ViewModels;
-using GestorBibliotecaApplication.ViewModels;
+//using GestorBibliotecaApplication.ViewModels;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace GestorBibliotecaApplication.Queries.GetAllEmprestimos
         private readonly LivrosDbContext _livrosDbContext;
         private readonly EmprestimoService _emprestimoService;
 
-        public GetAllEmprestimosHandler(LivrosDbContext livrosDbContext, IConfiguration configuration, EmprestimoService emprestimoService)
+        public GetAllEmprestimosHandler(LivrosDbContext livrosDbContext, EmprestimoService emprestimoService)
         {
             _livrosDbContext = livrosDbContext;
             _emprestimoService = emprestimoService;
@@ -32,9 +33,10 @@ namespace GestorBibliotecaApplication.Queries.GetAllEmprestimos
 
         public async Task<ResultViewModel<List<EmprestimoViewModel>>> Handle(GetAllEmprestimosQuery request, CancellationToken cancellationToken)
         {
+            var emprestimos = await _livrosDbContext.Emprestimos.ToListAsync(cancellationToken);
             var emprestimoViewModel = new List<EmprestimoViewModel>();
 
-            foreach (var emprestimo in _livrosDbContext.Emprestimos)
+            foreach (var emprestimo in emprestimos)
             {
                 var (nomeUsuario, tituloLivro) = _emprestimoService.BuscarNomeUsuarioTituloLivro(emprestimo.IdUsuario, emprestimo.IdLivro);
                 if (!string.IsNullOrWhiteSpace(request.Query) &&
