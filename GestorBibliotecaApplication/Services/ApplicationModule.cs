@@ -1,4 +1,5 @@
-﻿using GestorBibliotecaApplication.Services.Implementations;
+﻿using GestorBibliotecaApplication.Commands.CreateEmprestimo;
+using GestorBibliotecaApplication.Services.Implementations;
 using GestorBibliotecaApplication.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -14,7 +15,8 @@ namespace GestorBibliotecaApplication.Services
         public static IServiceCollection AddAplication(this IServiceCollection services)
         {
             services
-                .AddServices();
+                .AddServices()
+                .AddHandlers();
             return services;
         }
 
@@ -24,6 +26,14 @@ namespace GestorBibliotecaApplication.Services
             services.AddScoped<ILivroService, LivroService>();
             services.AddScoped<IUsuarioService, UsuarioService>();
             //services.AddMediatR(typeof();
+
+            return services;
+        }
+
+        private static IServiceCollection AddHandlers (this IServiceCollection services)
+        {
+            services.AddMediatR(config =>
+                config.RegisterServicesFromAssemblyContaining<InsertEmprestimoCommand>());
 
             return services;
         }

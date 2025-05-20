@@ -1,5 +1,11 @@
-﻿using GestorBibliotecaApplication.InputModels;
+﻿using GestorBibliotecaApplication.Commands.CreateEmprestimo;
+using GestorBibliotecaApplication.Commands.DeleteEmprestimo;
+using GestorBibliotecaApplication.Commands.UpdateEmprestimo;
+using GestorBibliotecaApplication.InputModels;
+using GestorBibliotecaApplication.Queries.GetAllEmprestimos;
+using GestorBibliotecaApplication.Queries.GetEmprestimoById;
 using GestorBibliotecaApplication.Services.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
@@ -10,24 +16,33 @@ namespace GestorBiblioteca.API.Controllers
     public class EmprestimosController: ControllerBase
     {
         private readonly IEmprestimoService _emprestimoService;
+        private readonly IMediator _mediator;
 
-       public EmprestimosController(IEmprestimoService emprestimoService)
+       public EmprestimosController(IEmprestimoService emprestimoService, IMediator mediator)
         {
             _emprestimoService = emprestimoService;
+            _mediator = mediator;
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] InsertEmprestimoInputModel inputModel)
+        public async Task<IActionResult>  Post([FromBody] InsertEmprestimoCommand command)
         {
             try
             {
-                if (inputModel.DataDevolucao < inputModel.DataEmprestimo)
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                if (command.DataDevolucao < command.DataEmprestimo)
                 {
                     return BadRequest("Data invalida");
                 }
-                var id = _emprestimoService.Insert(inputModel);
+                //var id = _emprestimoService.Insert(model);
+                var result = await _mediator.Send(command);
 
-                return CreatedAtAction(nameof(GetById), new { id = id }, inputModel);
+
+                return CreatedAtAction(nameof(GetById), new { id = result.Data}, command);
 
             } 
             catch (Exception ex)
@@ -37,34 +52,47 @@ namespace GestorBiblioteca.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task <IActionResult> GetById(int id)
         {
             //buscar emprestimo
-            var emprestimo = _emprestimoService.GetById(id);
+            //var emprestimo = _emprestimoService.GetById(id);
+            var result = await _mediator.Send(new GetEmprestimoByIdQuery(id));
 
-            if (emprestimo == null)
-                return NotFound();
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
 
-            return Ok(emprestimo);
+           /* if (emprestimo == null)
+                return NotFound();*/
+
+            return Ok(result);
         }
 
         [HttpGet]
-        public IActionResult GetAll(string query)
+        public async Task <IActionResult> GetAll(string search = "")
         {
+            //var result = _emprestimoService.GetAll(query);  
+            var query = new GetAllEmprestimosQuery();
+
+            var result = await _mediator.Send(query);
+
             //buscar todos os emprestimos com base numa pesquisa/busca
-            var emprestimos = _emprestimoService.GetAll(query);
-            return Ok(emprestimos);
+//            var emprestimos = _emprestimoService.GetAll(query);
+            return Ok(result);
         }
 
         [HttpPut]
-        public IActionResult Put([FromBody] UpdateEmprestimoInputModel inputModel)
+        public async Task <IActionResult> Put(int id, UpdateEmprestimoCommand command)
         {
-            if (inputModel.DataDevolucao < inputModel.DataEmprestimo)
+            if (command.DataDevolucao < command.DataEmprestimo)
             {
                 return BadRequest("Data invalida");
             }
 
-            _emprestimoService.Update(inputModel);
+            var result = await _mediator.Send(command);
+
+            //            _emprestimoService.Update(command);
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
 
             return NoContent();
         }
@@ -108,6 +136,17 @@ namespace GestorBiblioteca.API.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task <IActionResult> Delete (int id)
+        {
+            var result = await _mediator.Send(new DeleteEmprestimoCommmand(id));
+
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+
+            return NoContent();
         }
     }
 }

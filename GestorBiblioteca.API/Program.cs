@@ -31,7 +31,7 @@ builder.Services.AddDbContext<LivrosDbContext>(options =>
     )
 );
 
-builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<T>());
+//builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<T>());
 
 //builder.Services.AddDbContext<LivrosDbContext>(o => o.UseInMemoryDatabase("GestorBibliotecaCs"));
 
