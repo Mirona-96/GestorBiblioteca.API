@@ -14,12 +14,12 @@ namespace GestorBibliotecaApplication.Commands.DeleteEmprestimo
     public  class DeleteEmprestimoCommandHandler : IRequestHandler<DeleteEmprestimoCommmand, ResultViewModel>
     {
         private readonly LivrosDbContext _livrosDbContext;
-        private readonly string _connString;
+       /// private readonly string _connString;
 
         public DeleteEmprestimoCommandHandler(LivrosDbContext livrosDbContext, IConfiguration configuration)
         {
             _livrosDbContext = livrosDbContext;
-            _connString = configuration.GetConnectionString("GestorBibliotecaCs");
+            //_connString = configuration.GetConnectionString("GestorBibliotecaCs");
         }
 
         public async Task<ResultViewModel> Handle(DeleteEmprestimoCommmand request, CancellationToken cancellationToken)
@@ -32,7 +32,7 @@ namespace GestorBibliotecaApplication.Commands.DeleteEmprestimo
 
             emprestimo.SetAsDeleted();
             _livrosDbContext.Emprestimos.Update(emprestimo);
-            await _livrosDbContext.SaveChangesAsync();
+            await _livrosDbContext.SaveChangesAsync(cancellationToken);
 
             return ResultViewModel.Sucess();
         }

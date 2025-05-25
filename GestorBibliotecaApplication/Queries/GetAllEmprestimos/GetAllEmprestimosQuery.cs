@@ -33,28 +33,56 @@ namespace GestorBibliotecaApplication.Queries.GetAllEmprestimos
 
         public async Task<ResultViewModel<List<EmprestimoViewModel>>> Handle(GetAllEmprestimosQuery request, CancellationToken cancellationToken)
         {
-            var emprestimos = await _livrosDbContext.Emprestimos.ToListAsync(cancellationToken);
-            var emprestimoViewModel = new List<EmprestimoViewModel>();
 
-            foreach (var emprestimo in emprestimos)
-            {
-                var (nomeUsuario, tituloLivro) = _emprestimoService.BuscarNomeUsuarioTituloLivro(emprestimo.IdUsuario, emprestimo.IdLivro);
-                if (!string.IsNullOrWhiteSpace(request.Query) &&
-                    !(nomeUsuario.Contains(request.Query, StringComparison.OrdinalIgnoreCase) ||
-                      tituloLivro.Contains(request.Query, StringComparison.OrdinalIgnoreCase)))
+            // var emprestimoViewModel = new List<EmprestimoViewModel>();
+
+            var query = _livrosDbContext.Emprestimos
+                    .Include(e => e.Usuario)
+                    .Include(e => e.Livro)
+                    .AsQueryable();
+
+            /* foreach (var emprestimo in emprestimos)
+             {
+                 var (nomeUsuario, tituloLivro) = _emprestimoService.BuscarNomeUsuarioTituloLivro(emprestimo.IdUsuario, emprestimo.IdLivro);
+                 if (!string.IsNullOrWhiteSpace(request.Query) &&
+                     !(nomeUsuario.Contains(request.Query, StringComparison.OrdinalIgnoreCase) ||
+                       tituloLivro.Contains(request.Query, StringComparison.OrdinalIgnoreCase)))
+                 {
+                     continue;
+                 }*/
+
+                if (!string.IsNullOrWhiteSpace(request.Query))
                 {
-                    continue;
+                    var loweredQuery = request.Query.ToLower();
+                    query = query.Where(e =>
+                        e.Usuario.Nome.ToLower().Contains(loweredQuery) ||
+                        e.Livro.Titulo.ToLower().Contains(loweredQuery));
                 }
 
-                emprestimoViewModel.Add(new EmprestimoViewModel
-                {
-                    IdEmprestimo = emprestimo.Id,
-                    NomeUsuario = nomeUsuario,
-                    TituloLivro = tituloLivro,
-                    DataEmprestimo = emprestimo.DataEmprestimo,
-                    DataDevolucao = emprestimo.DataDevolucao
-                });
-            }
+            var emprestimos = await _livrosDbContext.Emprestimos
+                                .Where(e => !e.IsDeleted)
+                                .ToListAsync(cancellationToken);
+
+            /*  var emprestimoViewModel.Add(new EmprestimoViewModel
+                 {
+                     IdEmprestimo = emprestimo.Id,
+                     NomeUsuario = nomeUsuario,
+                     TituloLivro = tituloLivro,
+                     DataEmprestimo = emprestimo.DataEmprestimo,
+                     DataDevolucao = emprestimo.DataDevolucao
+                 });
+             }*/
+
+
+            var emprestimoViewModel = emprestimos.Select(e => new EmprestimoViewModel
+            {
+                IdEmprestimo = e.Id,
+                NomeUsuario = e.Usuario.Nome,
+                TituloLivro = e.Livro.Titulo,
+                DataEmprestimo = e.DataEmprestimo,
+                DataDevolucao = e.DataDevolucao
+            }).ToList();
+
             return ResultViewModel<List<EmprestimoViewModel>>.Success(emprestimoViewModel);
         }
     }

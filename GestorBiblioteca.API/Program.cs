@@ -36,9 +36,10 @@ builder.Services.AddDbContext<LivrosDbContext>(options =>
 //builder.Services.AddDbContext<LivrosDbContext>(o => o.UseInMemoryDatabase("GestorBibliotecaCs"));
 
 
-/*
+
 builder.Services.AddScoped<IEmprestimoService, EmprestimoService>();
-builder.Services.AddScoped<ILivroService, LivroService>();
+builder.Services.AddScoped<EmprestimoService>();
+/*builder.Services.AddScoped<ILivroService, LivroService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();*/
 builder.Services
     .AddAplication();

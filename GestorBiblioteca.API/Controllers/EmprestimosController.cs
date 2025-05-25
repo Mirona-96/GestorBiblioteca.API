@@ -71,7 +71,10 @@ namespace GestorBiblioteca.API.Controllers
         public async Task <IActionResult> GetAll(string search = "")
         {
             //var result = _emprestimoService.GetAll(query);  
-            var query = new GetAllEmprestimosQuery();
+            var query = new GetAllEmprestimosQuery
+            {
+                Query = search
+            };
 
             var result = await _mediator.Send(query);
 
@@ -144,9 +147,9 @@ namespace GestorBiblioteca.API.Controllers
             var result = await _mediator.Send(new DeleteEmprestimoCommmand(id));
 
             if (!result.IsSuccess)
-                return BadRequest(result.Message);
+                return NotFound(new { Mensagem = result.Message });
 
-            return NoContent();
+            return Ok(new {result.Message});
         }
     }
 }

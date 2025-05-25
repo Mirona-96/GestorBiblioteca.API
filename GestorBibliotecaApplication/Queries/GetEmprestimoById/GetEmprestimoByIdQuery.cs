@@ -1,5 +1,6 @@
 ﻿using GestorBiblioteca.Infrastructure.Persistence;
 using GestorBibliotecaApplication.Services.Implementations;
+using GestorBibliotecaApplication.Services.Interfaces;
 using GestorBibliotecaApplication.ViewModels;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

@@ -27,6 +27,7 @@ namespace GestorBibliotecaApplication.Commands.UpdateEmprestimo
                 return ResultViewModel.Error("Emprestimo inexistente");
 
             emprestimo.Update(request.DataDevolucao);
+            _livrosDbContext.Emprestimos.Update(emprestimo);
             await _livrosDbContext.SaveChangesAsync();
             return ResultViewModel.Sucess();
         }
