@@ -41,6 +41,9 @@ namespace GestorBiblioteca.API.Controllers
                 //var id = _emprestimoService.Insert(model);
                 var result = await _mediator.Send(command);
 
+                if(!result.IsSuccess) 
+                    return BadRequest(result.Message);
+
 
                 return CreatedAtAction(nameof(GetById), new { id = result.Data}, command);
 

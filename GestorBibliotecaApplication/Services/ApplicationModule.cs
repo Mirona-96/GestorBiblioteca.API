@@ -1,6 +1,8 @@
 ﻿using GestorBibliotecaApplication.Commands.CreateEmprestimo;
 using GestorBibliotecaApplication.Services.Implementations;
 using GestorBibliotecaApplication.Services.Interfaces;
+using GestorBibliotecaApplication.ViewModels;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -34,6 +36,8 @@ namespace GestorBibliotecaApplication.Services
         {
             services.AddMediatR(config =>
                 config.RegisterServicesFromAssemblyContaining<InsertEmprestimoCommand>());
+
+            services.AddTransient<IPipelineBehavior<InsertEmprestimoCommand, ResultViewModel<int>>, ValidateInsertProjectCommandBehavior>();
 
             return services;
         }
