@@ -97,7 +97,7 @@ namespace GestorBiblioteca.API.Controllers
             if (!result.IsSuccess)
                 return BadRequest(result.Message);
 
-            return NoContent();
+            return NotFound("Emprestimo não encontrado");
         }
 
         [HttpPut("{id}/devolucao")]

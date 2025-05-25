@@ -1,7 +1,14 @@
 ﻿using GestorBiblioteca.Core.Entities;
+using GestorBibliotecaApplication.Commands.CreateLivro;
+using GestorBibliotecaApplication.Commands.DeleteLivro;
+using GestorBibliotecaApplication.Commands.UpdateLivro;
 using GestorBibliotecaApplication.InputModels;
+using GestorBibliotecaApplication.Queries.GetAllLivros;
+using GestorBibliotecaApplication.Queries.GetLivroById;
 using GestorBibliotecaApplication.Services.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace GestorBiblioteca.API.Controllers
 {
@@ -9,21 +16,29 @@ namespace GestorBiblioteca.API.Controllers
     public class LivrosController : ControllerBase
     {
         private readonly ILivroService _livroService;
+        private readonly IMediator _mediator;
 
-        public LivrosController (ILivroService livroService)
+        public LivrosController (ILivroService livroService , IMediator mediator)
         {
             _livroService = livroService;
+            _mediator = mediator;
         }
 
         //api/ivros?query
         [HttpGet]
-        public IActionResult Get (string query)
+        public async Task <IActionResult> GetAll (string search = "")
         {
             try
             {
                 //buscar todos ou com filtro
-                var livros = _livroService.GetAll(query);
-                return Ok(livros);
+                //var livros = _livroService.GetAll(query);
+                var query = new GetAllLivrosQuery 
+                { 
+                    Query = search 
+                };
+
+                var result = await _mediator.Send(query);
+                return Ok(result);
             } 
             catch (Exception ex)
             {
@@ -33,62 +48,80 @@ namespace GestorBiblioteca.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task <IActionResult> GetById(int id)
         {
             //buscar o livro
-            var livro = _livroService.GetById(id);
-            if (livro == null)
-                return NotFound("Livro não encontrado");
+            //var livro = _livroService.GetById(id);
+            var result = await _mediator.Send(new GetLivroByIdQuery(id));
+
+            /*if (livro == null)
+                return NotFound("Livro não encontrado");*/
+
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
             //return NotFound
-            return Ok(livro);
+            return Ok(result);
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] NewLivroInputModel inputModel)
+        public async Task<IActionResult> Post([FromBody] InsertLivroCommand command)
         {
-            if (string.IsNullOrWhiteSpace(inputModel.Titulo))
+            if (string.IsNullOrWhiteSpace(command.Titulo))
             {
                 return BadRequest("introduza o título do livro válido.");
             }
-            if (string.IsNullOrEmpty(inputModel.Autor))
+            if (string.IsNullOrEmpty(command.Autor))
             {
                 return BadRequest("introduza o autor do livro");
             }
-            if (inputModel.AnoPublicacao > DateTime.Now.Year)
+            if (command.AnoPublicacao > DateTime.Now.Year)
             {
                 return BadRequest("Ano de Publicação inválido.");
             }
 
-            var id = _livroService.Insert(inputModel);
+            //var id = _livroService.Insert(command);
+            var result = await _mediator.Send(command);
             //cadastrar livro
-            return CreatedAtAction(nameof(GetById), new { id = id }, inputModel);
+            return CreatedAtAction(nameof(GetById), new { id = result.Data }, command);
         }
 
         [HttpPut ("{id}")]
-        public IActionResult Put(int id, [FromBody] UpdateLivroInputModel inputModel)
+        public async Task<IActionResult> Put(int id, [FromBody] UpdateLivroCommand command)
         {
-            if (string.IsNullOrEmpty(inputModel.Titulo))
+            if (string.IsNullOrEmpty(command.Titulo))
             {
                 return BadRequest("introduza o título do livro válido.");
             }
-            if (string.IsNullOrEmpty(inputModel.Autor))
+            if (string.IsNullOrEmpty(command.Autor))
             {
                 return BadRequest("introduza o autor do livro");
             }
-            if (inputModel.AnoPublicacao > DateTime.Now.Year)
+            if (command.AnoPublicacao > DateTime.Now.Year)
             {
                 return BadRequest("Ano de Publicação inválido.");
             }
-            _livroService.Update(inputModel);
+
+            var result = await _mediator.Send (command);
+
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+            //_livroService.Update(command);
             //Atualizar objecto
 
             return NotFound("Livro não encontrado");
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task <IActionResult> Delete(int id)
         {
-            try
+            var result = await _mediator.Send(new DeleteLivroCommand(id));
+
+            if (!result.IsSuccess)
+                return NotFound(new { Mensagem = result.Message });
+
+            return Ok(new { result.Message });
+
+/*            try
             {
                 _livroService.Delete(id);
                 return NotFound("Livro não encontrado");
@@ -96,7 +129,7 @@ namespace GestorBiblioteca.API.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { Erro = ex.Message });
-            }
+            }*/
         }
     }
 }

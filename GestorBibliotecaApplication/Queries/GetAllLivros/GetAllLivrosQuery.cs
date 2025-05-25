@@ -37,11 +37,12 @@ namespace GestorBibliotecaApplication.Queries.GetAllLivros
                 {
                     sqlConn.Open();
                     var script = @"
-                SELECT Id, Titulo, Autor
-                FROM Livros
-                WHERE (@query IS NULL OR
-                       LOWER(Titulo) LIKE '%' + LOWER(@query) + '%' OR
-                       LOWER(Autor) LIKE '%' + LOWER(@query) + '%')";
+                                SELECT Id, Titulo, Autor
+                                FROM Livros
+                                WHERE IsDeleted = 0
+                                AND (@query IS NULL OR
+                                       LOWER(Titulo) LIKE '%' + LOWER(@query) + '%' OR
+                                       LOWER(Autor) LIKE '%' + LOWER(@query) + '%')";
 
                     var livros =  ( await sqlConn.QueryAsync<LivroViewModel>(script, new { query = request.Query })).ToList();
 
@@ -58,6 +59,5 @@ namespace GestorBibliotecaApplication.Queries.GetAllLivros
                 return ResultViewModel<List<LivroViewModel>>.Error("Erro inesperado.");
             }
         }
-
     }
 }

@@ -38,7 +38,7 @@ namespace GestorBibliotecaApplication.Queries.GetEmprestimoById
             var emprestimo = await _livrosDbContext.Emprestimos
                         .Include(u => u.Usuario)
                         .Include(l => l.Livro)
-                        .SingleOrDefaultAsync(emp => emp.Id == request.Id);
+                        .SingleOrDefaultAsync(emp => emp.Id == request.Id && !emp.IsDeleted);
 
             if (emprestimo == null)
             {

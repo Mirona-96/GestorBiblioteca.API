@@ -31,7 +31,8 @@ namespace GestorBibliotecaApplication.Queries.GetLivroById
 
         public async Task<ResultViewModel<LivroDetailsModel>> Handle(GetLivroByIdQuery request, CancellationToken cancellationToken)
         {
-            var livro = await _livrosDbContext.Livros.SingleOrDefaultAsync(l => l.Id == request.Id);
+            var livro = await _livrosDbContext.Livros
+                                              .SingleOrDefaultAsync(l => l.Id == request.Id && !l.IsDeleted);
 
             if (livro == null)
                 return ResultViewModel<LivroDetailsModel>.Error("Livro inexistente");

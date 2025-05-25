@@ -27,6 +27,7 @@ namespace GestorBibliotecaApplication.Commands.UpdateLivro
                 return ResultViewModel.Error("Livro inexistente");
 
             livro.Update(request.Autor, request.Titulo, request.ISBN, request.AnoPublicacao);
+            _livrosDbContext.Livros.Update(livro);
             await _livrosDbContext.SaveChangesAsync();
             return ResultViewModel.Sucess();
         }
