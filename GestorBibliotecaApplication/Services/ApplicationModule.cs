@@ -1,4 +1,5 @@
 ﻿using GestorBibliotecaApplication.Commands.CreateEmprestimo;
+using GestorBibliotecaApplication.Notification;
 using GestorBibliotecaApplication.Services.Implementations;
 using GestorBibliotecaApplication.Services.Interfaces;
 using GestorBibliotecaApplication.ViewModels;
@@ -38,6 +39,9 @@ namespace GestorBibliotecaApplication.Services
                 config.RegisterServicesFromAssemblyContaining<InsertEmprestimoCommand>());
 
             services.AddTransient<IPipelineBehavior<InsertEmprestimoCommand, ResultViewModel<int>>, ValidateInsertProjectCommandBehavior>();
+
+            services.AddMediatR(config =>
+               config.RegisterServicesFromAssemblyContaining<EmprestimoCreatedNotification>());
 
             return services;
         }
