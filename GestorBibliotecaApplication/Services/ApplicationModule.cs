@@ -1,4 +1,7 @@
-﻿using GestorBibliotecaApplication.Commands.CreateEmprestimo;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using GestorBibliotecaApplication.Commands.CreateEmprestimo;
+using GestorBibliotecaApplication.InputModels;
 using GestorBibliotecaApplication.Notification;
 using GestorBibliotecaApplication.Services.Implementations;
 using GestorBibliotecaApplication.Services.Interfaces;
@@ -19,7 +22,8 @@ namespace GestorBibliotecaApplication.Services
         {
             services
                 .AddServices()
-                .AddHandlers();
+                .AddHandlers()
+                .AddValidation();
             return services;
         }
 
@@ -42,6 +46,17 @@ namespace GestorBibliotecaApplication.Services
 
             services.AddMediatR(config =>
                config.RegisterServicesFromAssemblyContaining<EmprestimoCreatedNotification>());
+
+            return services;
+        }
+
+        private static IServiceCollection AddValidation(this IServiceCollection services)
+        {
+            services
+                .AddFluentValidationAutoValidation()
+                .AddValidatorsFromAssemblyContaining<InsertEmprestimoCommand>()
+                .AddValidatorsFromAssemblyContaining<CreateUsuarioInputModel>(); ;
+
 
             return services;
         }
