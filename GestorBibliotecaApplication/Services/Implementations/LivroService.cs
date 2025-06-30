@@ -106,6 +106,7 @@ namespace GestorBibliotecaApplication.Services.Implementations
         {
             var livro = _livrosDbContext.Livros.SingleOrDefault(l => l.Id == id);
 
+
             if (livro == null)
                 return ResultViewModel<LivroDetailsModel>.Error("Livro inexistente");
 

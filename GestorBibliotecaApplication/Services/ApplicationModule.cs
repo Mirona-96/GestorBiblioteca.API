@@ -31,7 +31,7 @@ namespace GestorBibliotecaApplication.Services
         {
             services.AddScoped<IEmprestimoService, EmprestimoService>();
             services.AddScoped<ILivroService, LivroService>();
-            services.AddScoped<IUsuarioService, UsuarioService>();
+         //   services.AddScoped<IUsuarioService, UsuarioService>();
             //services.AddMediatR(typeof();
 
             return services;
